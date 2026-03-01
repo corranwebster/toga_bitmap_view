@@ -99,9 +99,9 @@ class TogaBitmapView(NSView):
     @objc_method
     def keyDown_(self, event) -> None:
         if self.interface.on_key_press:
+            keys = toga_key(event)
             self.interface.on_key_press(
-                self.interface,
-                **toga_key(event.keyCode, event.modifierFlags)
+                **keys
             )
 
     # @objc_method

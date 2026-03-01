@@ -104,7 +104,7 @@ class Terminal(toga.App):
                 self.cursor.position[1]
             ))
         elif key.is_printable():
-            if toga.Key.CONTROL in modifiers:
+            if toga.Key.MOD_1 in modifiers:
                 self.print('^{}'.format(key.value.upper()))
             elif toga.Key.SHIFT in modifiers:
                 self.print(key.value.upper())
