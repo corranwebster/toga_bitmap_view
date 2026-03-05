@@ -1,15 +1,32 @@
-from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage, QKeyEvent, QPixmap, QKeySequence
+from PySide6.QtWidgets import QLabel
 from travertino.size import at_least
 
-from toga_gtk.keys import toga_key
+from toga_qt.keys import qt_to_toga_key
 from toga.handlers import WeakrefCallable
-from toga_gtk.widgets.base import Widget
+from toga_qt.widgets.base import Widget
 
-from .bitmap import RGB24, Bitmap
+from .bitmap import RGBA32, Bitmap
+
+
+class QBitmapView(QLabel):
+
+    def __init__(self, impl, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.impl = impl
+        self.interface = impl.interface
+
+    def keyPressEvent(self, ev: QKeyEvent) -> None:
+        key_sequence = QKeySequence(ev.keyCombination())
+        keys = qt_to_toga_key(key_sequence)
+        if keys is not None:
+            keys['text'] = ev.text()
+            self.interface.on_key_press(**keys)
 
 
 class BitmapView(Widget):
-    _format = RGB24
+    _format = RGBA32
 
     def create(self):
         # Allocate a memory buffer to store pixel data.
@@ -19,56 +36,29 @@ class BitmapView(Widget):
 
         # create a bitmap around the memory
         self.bitmap = Bitmap(self.interface.size, self.memory, format=self._format)
+        width, height = self.interface.size
+        self.native_image = QImage(self.memory, width, height, QImage.Format.Format_RGBA8888)
 
         # Create an image from the pixel buffer.
-        self.native = Gtk.Image()
-        self.native.set_can_focus(True)
-
-        if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-            self.native.connect("key-press-event", self.gtk_key_press_event)
-        else:
-            self.key_controller = Gtk.EventControllerKey.new()
-            self.native.add_controller(self.key_controller)
-            self.key_controller.connect(
-                "key-pressed", WeakrefCallable(self.gtk_key_pressed)
-            )
+        self.native = QBitmapView(self)
+        self.native.setScaledContents(True)
+        self.native.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.native.setPixmap(self.create_pixmap())
 
         # Current state of redraw updates
         self._suspended = 0
         self._update_pending = False
 
-    def create_pixbuf(self, width, height):
-        pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
-            data=GLib.Bytes(self.memory),
-            colorspace=GdkPixbuf.Colorspace.RGB,
-            has_alpha=False,
-            bits_per_sample=8,
-            width=self.interface.size[0],
-            height=self.interface.size[1],
-            rowstride=self.memory_stride,
-        )
-        return pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
+    def set_on_key_press(self, on_key_press):
+        pass
 
-    if GTK_VERSION < (4, 0, 0):  # pragma: no-cover-if-gtk4
-
-        def gtk_key_press_event(self, _entry, event):
-            key_pressed = toga_key(event.keyval, event.state)
-            if key_pressed:
-                self.interface.on_key_press(**key_pressed)
-
-    else:  # pragma: no-cover-if-gtk3
-
-        def gtk_key_pressed(self, _controller, keyval, _keycode, state):
-            key_pressed = toga_key(keyval, state)
-            if key_pressed:
-                self.interface.on_key_press(**key_pressed)
+    def create_pixmap(self):
+        pixmap = QPixmap.fromImage(self.native_image)
+        return pixmap
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.size[0])
         self.interface.intrinsic.height = at_least(self.interface.size[1])
-
-    def set_on_key_press(self, on_key_press):
-        pass
 
     def set(self, x, y, color):
         pixel = self._format.from_color(color)
@@ -104,12 +94,8 @@ class BitmapView(Widget):
         if self._suspended:
             self._update_pending = True
         else:
-            allocation = self.native.get_allocation()
-            self.native.set_from_pixbuf(
-                self.create_pixbuf(
-                    allocation.width,
-                    allocation.height,
-                )
+            self.native.setPixmap(
+                self.create_pixmap()
             )
             self._update_pending = False
 
@@ -125,11 +111,7 @@ class BitmapView(Widget):
 
         if self._suspended == 0:
             if self._update_pending:
-                allocation = self.native.get_allocation()
-                self.native.set_from_pixbuf(
-                    self.create_pixbuf(
-                        allocation.width,
-                        allocation.height,
-                    )
+                self.native.setPixmap(
+                    self.create_pixmap()
                 )
                 self._update_pending = False

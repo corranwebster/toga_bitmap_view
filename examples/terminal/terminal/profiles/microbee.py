@@ -1,4 +1,4 @@
-from travertino.colors import color
+from travertino.colors import Color
 
 
 MICROBEE_FONT = [
@@ -280,20 +280,20 @@ MICROBEE_FONT = [
 # http://harveycohen.net/oznaki/microbee.html
 __name__ = 'MicroBee'
 
-# Microbee 'full screen' is 512 pixels wide x 512 pixels high,
+# Microbee 'full screen' is 512 pixels wide x 256 pixels high,
 # including the border area
-full_screen_size = (512, 512)
+full_screen_size = (512, 256)
 
-# Microbee 'addressable' screen area - 512 pixels wide x 512 pixels high
-screen_size = (512, 512)
+# Microbee 'addressable' screen area - 512 pixels wide x 256 pixels high
+screen_size = (512, 256)
 
 # Microbee text characters are 8 pixels wide x 16 pixels high
 character_size = (8, 16)
 
 # Microbee colors (monochrome display)
 colors = [
-    color('#000000'),  # black
-    color('#00FF00'),  # green
+    Color.parse('#000000'),  # black
+    Color.parse('#00FF00'),  # green
 ]
 
 default_border_color = 0  # black

@@ -45,21 +45,12 @@ class Terminal(toga.App):
 
     def clear(self):
         with self.screen as screen:
-            for x in range(0, self.profile.full_screen_size[0]):
-                for y in range(0, self.profile.full_screen_size[1]):
-                    if y < self.border_size[1]:
-                        color = self.border_color
-                    elif y < self.border_size[1] + self.profile.screen_size[1]:
-                        if x < self.border_size[0]:
-                            color = self.border_color
-                        elif x < self.border_size[0] + self.profile.screen_size[0]:
-                            color = self.background_color
-                        else:
-                            color = self.border_color
-                    else:
-                        color = self.border_color
-                    screen.set(x, y, color)
-
+            if self.border_size[0] != 0 or self.border_size[1] != 0:
+                screen.rect(0, 0, screen.size[0], self.border_size[1], self.border_color)
+                screen.rect(0, self.border_size[1], self.border_size[0], self.profile.screen_size[1], self.border_color)
+                screen.rect(self.border_size[0] + self.profile.screen_size[0], self.border_size[1], self.border_size[0], self.profile.screen_size[1], self.border_color)
+                screen.rect(0, self.border_size[1] + self.profile.screen_size[1], screen.size[0], self.border_size[1], self.border_color)
+            screen.rect(self.border_size[0], self.border_size[1], self.profile.screen_size[0], self.profile.screen_size[1], self.background_color)
         self.start_cursor()
 
     def draw_char(self, pos, char):
@@ -81,6 +72,15 @@ class Terminal(toga.App):
 
                     screen.set(origin_x + x, origin_y + y, color)
 
+    def scroll(self):
+        """Scroll the screen up one line and clear the last line."""
+        import time
+        t = time.perf_counter_ns()
+        with self.screen as screen:
+            screen.scroll(self.border_size[0], self.border_size[1], self.profile.screen_size[0], self.profile.screen_size[1], 0, -self.profile.character_size[1])
+            screen.rect(self.border_size[0], self.border_size[1] + self.profile.screen_size[1] - self.profile.character_size[1], self.profile.screen_size[0], self.profile.character_size[1], self.background_color)
+        print(time.perf_counter_ns() - t)
+
     def print(self, text):
         position = self.cursor.position
         for char in text:
@@ -89,11 +89,16 @@ class Terminal(toga.App):
             else:
                 self.draw_char(position, char)
                 position = (position[0] + 1, position[1])
+            if position[0] * self.profile.character_size[0] >= self.profile.screen_size[0]:
+                position = (0, position[1] + 1)
+            if position[1] * self.profile.character_size[1] >= self.profile.screen_size[1]:
+                position = (position[0], position[1] - 1)
+                self.scroll()
 
         # Restart the cursor blinking
         self.start_cursor(position)
 
-    def keypress(self, widget, key=None, modifiers=None):
+    def keypress(self, widget, key=None, modifiers=None, **kwargs):
         if key == toga.Key.ENTER:
             self.draw_char(self.cursor.position, ' ')
             self.print('\n')

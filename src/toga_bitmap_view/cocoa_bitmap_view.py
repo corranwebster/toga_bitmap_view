@@ -10,6 +10,8 @@ from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import core_graphics, NSView, NSRect, NSGraphicsContext
 from toga_cocoa.widgets.base import Widget
 
+from .bitmap import Bitmap, RGB24
+
 
 ######################################################################
 # CoreGraphics constants
@@ -79,9 +81,9 @@ class TogaBitmapView(NSView):
         image = core_graphics.CGImageCreate(
             self.interface.size[0],
             self.interface.size[1],
-            self._impl.BITS_PER_COMPONENT,
-            self._impl.BITS_PER_COMPONENT * self._impl.COMPONENTS_PER_PIXEL,
-            self._impl.COMPONENTS_PER_PIXEL * self.interface.size[0],
+            self._impl._format.channel_bits,
+            self._impl._format.channel_bits * self._impl._format.pixel_size,
+            self._impl._format.pixel_size * self.interface.size[0],
             self._impl.rgb_colorspace,
             kCGBitmapByteOrderDefault | kCGImageAlphaNone,
             data_provider, None, False, kCGRenderingIntentDefault)
@@ -94,10 +96,11 @@ class TogaBitmapView(NSView):
 
     @objc_method
     def isFlipped(self) -> bool:
-        return True
+        return False
 
     @objc_method
     def keyDown_(self, event) -> None:
+        from toga_cocoa.libs import NSEventModifierFlagCommand
         if self.interface.on_key_press:
             keys = toga_key(event)
             self.interface.on_key_press(
@@ -128,8 +131,7 @@ class TogaBitmapView(NSView):
 ######################################################################
 
 class BitmapView(Widget):
-    COMPONENTS_PER_PIXEL = 3
-    BITS_PER_COMPONENT = 8
+    _format = RGB24
 
     def create(self):
         self.native = TogaBitmapView.alloc().init()
@@ -143,40 +145,39 @@ class BitmapView(Widget):
         self._update_pending = False
 
         # Allocate a memory buffer, initialized to 0
-        self.memory_stride = self.interface.size[0] * self.COMPONENTS_PER_PIXEL
+        self.memory_stride = self.interface.size[0] * self._format.pixel_size
         self.memory_size = self.interface.size[1] * self.memory_stride
         self.memory = (self.memory_size * c_ubyte)()
 
+        # create a bitmap around the memory
+        self.bitmap = Bitmap(self.interface.size, self.memory, format=self._format)
+
         # Add the layout constraints
         self.add_constraints()
-
-    def set_on_key_press(self, handler):
-        pass
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.size[0])
         self.interface.intrinsic.height = at_least(self.interface.size[1])
 
-    def set(self, x, y, color):
-        offset = (
-            x * self.COMPONENTS_PER_PIXEL + (
-                (self.interface.size[1] - y - 1) * self.memory_stride
-            )
-        )
+    def set_on_key_press(self, on_key_press):
+        pass
 
-        self.memory[offset] = color.r
-        self.memory[offset + 1] = color.g
-        self.memory[offset + 2] = color.b
+    def set(self, x, y, color):
+        pixel = self._format.from_color(color)
+        self.bitmap.set_pixel(x, y, pixel)
         self.update_display()
 
     def get(self, x, y, color):
-        offset = (
-            x * self.COMPONENTS_PER_PIXEL + (
-                (self.interface.size[1] - y - 1)
-                * (self.COMPONENTS_PER_PIXEL * self.interface.size[0])
-            )
-        )
-        return (self.memory[offset], self.memory[offset + 1], self.memory[offset + 2])
+        return self.bitmap.get_pixel(x, y).color
+
+    def rect(self, x, y, width, height, color):
+        pixel = self._format.from_color(color)
+        self.bitmap.set_rect(x, y, width, height, pixel)
+        self.update_display()
+
+    def scroll(self, x, y, width, height, dx, dy):
+        self.bitmap.scroll_rect(x, y, width, height, dx, dy)
+        self.update_display()
 
     def suspend_updates(self):
         """Temporarily suspend updates on the bitmap view.

@@ -1,4 +1,4 @@
-from travertino.colors import color
+from travertino.colors import Color
 
 
 UNPRINTABLE_CHAR = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -310,23 +310,23 @@ character_size = (8, 8)
 # ZX Spectrum  colors
 colors = [
     # dark
-    color('#000000'),  # black
-    color('#0000D7'),  # blue
-    color('#D70000'),  # red
-    color('#D700D7'),  # magenta
-    color('#00D700'),  # green
-    color('#00D7D7'),  # cyan
-    color('#D7D700'),  # yellow
-    color('#D7D7D7'),  # white
+    Color.parse('#000000'),  # black
+    Color.parse('#0000D7'),  # blue
+    Color.parse('#D70000'),  # red
+    Color.parse('#D700D7'),  # magenta
+    Color.parse('#00D700'),  # green
+    Color.parse('#00D7D7'),  # cyan
+    Color.parse('#D7D700'),  # yellow
+    Color.parse('#D7D7D7'),  # white
     # bright
-    color('#000000'),  # black
-    color('#0000FF'),  # blue
-    color('#FF0000'),  # red
-    color('#FF00FF'),  # magenta
-    color('#00FF00'),  # green
-    color('#00FFFF'),  # cyan
-    color('#FFFF00'),  # yellow
-    color('#FFFFFF'),  # white
+    Color.parse('#000000'),  # black
+    Color.parse('#0000FF'),  # blue
+    Color.parse('#FF0000'),  # red
+    Color.parse('#FF00FF'),  # magenta
+    Color.parse('#00FF00'),  # green
+    Color.parse('#00FFFF'),  # cyan
+    Color.parse('#FFFF00'),  # yellow
+    Color.parse('#FFFFFF'),  # white
 ]
 
 default_border_color = 0  # black

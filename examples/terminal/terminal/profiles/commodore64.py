@@ -1,4 +1,4 @@
-from travertino.colors import color
+from travertino.colors import Color
 
 
 UNPRINTABLE_CHAR = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -624,22 +624,22 @@ character_size = (8, 8)
 # Commodore 64 colors - see the very interesting article here:
 #    http://unusedino.de/ec64/technical/misc/vic656x/colors/
 colors = [
-    color('#000000'),  # 0  black
-    color('#FFFFFF'),  # 1  white
-    color('#68372B'),  # 2  red
-    color('#70A4B2'),  # 3  cyan
-    color('#6F3D86'),  # 4  purple
-    color('#588D43'),  # 5  green
-    color('#352879'),  # 6  blue
-    color('#B8C76F'),  # 7  yellow
-    color('#6F4F25'),  # 8  orange
-    color('#433900'),  # 9  brown
-    color('#9A6759'),  # 10 light red
-    color('#444444'),  # 11 dark grey
-    color('#6C6C6C'),  # 12 grey
-    color('#9AD284'),  # 13 light green
-    color('#6C5EB5'),  # 14 light blue
-    color('#959595'),  # 15 light grey
+    Color.parse('#000000'),  # 0  black
+    Color.parse('#FFFFFF'),  # 1  white
+    Color.parse('#68372B'),  # 2  red
+    Color.parse('#70A4B2'),  # 3  cyan
+    Color.parse('#6F3D86'),  # 4  purple
+    Color.parse('#588D43'),  # 5  green
+    Color.parse('#352879'),  # 6  blue
+    Color.parse('#B8C76F'),  # 7  yellow
+    Color.parse('#6F4F25'),  # 8  orange
+    Color.parse('#433900'),  # 9  brown
+    Color.parse('#9A6759'),  # 10 light red
+    Color.parse('#444444'),  # 11 dark grey
+    Color.parse('#6C6C6C'),  # 12 grey
+    Color.parse('#9AD284'),  # 13 light green
+    Color.parse('#6C5EB5'),  # 14 light blue
+    Color.parse('#959595'),  # 15 light grey
 ]
 
 default_border_color = 14  # light blue

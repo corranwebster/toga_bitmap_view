@@ -3,11 +3,13 @@ from __future__ import annotations
 from functools import cached_property
 from typing import Any, Protocol
 
-from travertino.colors import rgb
+from travertino.colors import Color, rgb
 
 import toga
 from toga.handlers import wrapped_handler
 from toga.platform import get_factory
+
+from .bitmap import Bitmap
 
 
 
@@ -55,6 +57,7 @@ class BitmapView(toga.Widget):
         """Create a new single-line text input widget.
 
         :param id: The ID for the widget.
+        :param size: The size of the bitmap.
         :param style: A style object. If no style is provided, a default style will be
             applied to the widget.
         :param on_key_press: A handler that will be invoked when the user presses a key
@@ -63,6 +66,7 @@ class BitmapView(toga.Widget):
             input focus.
         :param on_lose_focus: A handler that will be invoked when the widget loses
             input focus.
+        :param enabled: Whether or not the widget is enabled.
         :param kwargs: Initial style properties.
         """
         self._size = size
@@ -89,11 +93,21 @@ class BitmapView(toga.Widget):
     def size(self):
         return self._size
 
-    def set(self, x, y, color):
+    @property
+    def bitmap(self):
+        return self._impl.bitmap
+
+    def set(self, x: int, y: int, color: Color):
         self._impl.set(x, y, color)
+
+    def rect(self, x: int, y: int, width: int, height: int, color: Color):
+        self._impl.rect(x, y, width, height, color)
 
     def get(self, x, y):
         return rgb(self._impl.get(x, y))
+
+    def scroll(self, x, y, width, height, dx, dy):
+        self._impl.scroll(x, y, width, height, dx, dy)
 
     def __enter__(self):
         self._impl.suspend_updates()

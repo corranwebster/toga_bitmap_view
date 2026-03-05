@@ -69,6 +69,9 @@ BitmapView = "toga_bitmap_view.cocoa_bitmap_view:BitmapView"
 [project.entry-points."togax_bitmap_view.backend.toga_gtk"]
 BitmapView = "toga_bitmap_view.gtk_bitmap_view:BitmapView"
 
+[project.entry-points."togax_bitmap_view.backend.toga_qt"]
+BitmapView = "toga_bitmap_view.qt_bitmap_view:BitmapView"
+
 [dependency-groups]
 # Extras used by developers *of* Toga are pinned to specific versions to
 # ensure environment consistency.
