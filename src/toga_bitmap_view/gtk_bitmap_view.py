@@ -5,7 +5,8 @@ from toga_gtk.keys import toga_key
 from toga.handlers import WeakrefCallable
 from toga_gtk.widgets.base import Widget
 
-from .bitmap import RGB24, Bitmap
+from .bitmap import Bitmap
+from .pixel_format import RGB24
 
 
 class BitmapView(Widget):

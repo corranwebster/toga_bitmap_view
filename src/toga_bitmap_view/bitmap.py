@@ -1,62 +1,8 @@
 from __future__ import annotations
 
-from functools import cached_property
-from typing import ClassVar, Protocol, overload, runtime_checkable
+from typing import overload
 
-from travertino.colors import Color, rgb
-
-
-@runtime_checkable
-class PixelFormat(Protocol):
-    pixel_size: ClassVar[int]
-    channel_bits: ClassVar[int]
-    def __init__(self, value: bytes | bytearray): ...
-    @classmethod
-    def from_color(cls, color: Color) -> PixelFormat: ...
-    @property
-    def bytes(self) -> bytes: ...
-    @property
-    def color(self) -> Color: ...
-
-
-class RGB24(PixelFormat):
-    pixel_size: ClassVar[int] = 3
-    channel_bits: ClassVar[int] = 8
-
-    def __init__(self, value: bytes | bytearray | tuple[int, int, int]):
-        self._bytes = bytes(value)
-
-    @classmethod
-    def from_color(cls, color: Color):
-        return cls((color.r, color.g, color.b))
-
-    @property
-    def bytes(self) -> bytes:
-        return self._bytes
-
-    @property
-    def color(self) -> Color:
-        return rgb(*self._bytes)
-
-
-class RGBA32(PixelFormat):
-    pixel_size: ClassVar[int] = 4
-    channel_bits: ClassVar[int] = 8
-
-    def __init__(self, value: bytes | bytearray | tuple[int, int, int, int]):
-        self._bytes = bytes(value)
-
-    @classmethod
-    def from_color(cls, color: Color):
-        return cls((color.r, color.g, color.b, int(color.a * 255)))
-
-    @property
-    def bytes(self) -> bytes:
-        return self._bytes
-
-    @property
-    def color(self) -> Color:
-        return rgb(*self._bytes)
+from .pixel_format import RGB24, PixelFormat
 
 
 class Bitmap:
@@ -146,14 +92,20 @@ class Bitmap:
     # Safe public access methods
 
     def get_pixel(self, x: int, y: int) -> PixelFormat:
-        if abs(x) >= self._size[0] or abs(y) >= self._size[1]:
+        if (
+            not (-self._size[0] <= x < self._size[0])
+            or not (-self._size[1] <= y < self._size[1])
+        ):
             raise IndexError(f"Coordinates ({x}, {y}) outside bitmap size {self.size}.")
         x = self._normalize(x, 0)
         y = self._normalize(y, 1)
         return self._get_pixel(x, y)
 
     def set_pixel(self, x: int, y: int, pixel: PixelFormat):
-        if abs(x) >= self._size[0] or abs(y) >= self._size[1]:
+        if (
+            not (-self._size[0] <= x < self._size[0])
+            or not (-self._size[1] <= y < self._size[1])
+        ):
             raise IndexError(f"Coordinates ({x}, {y}) outside bitmap size {self.size}.")
         x = self._normalize(x, 0)
         y = self._normalize(y, 1)
@@ -213,6 +165,10 @@ class Bitmap:
                     )
 
     def scroll_rect(self, x, y, width, height, dx, dy):
+        if dx == 0 and dy == 0:
+            # no scrolling!
+            return
+
         # memory inefficient but simple
         source_x = x if dx >= 0 else x-dx
         source_y = y if dy >= 0 else y-dy

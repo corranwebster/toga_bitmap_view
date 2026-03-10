@@ -40,7 +40,6 @@ class Cursor:
 class Terminal(toga.App):
     def __init__(self, profile):
         self.profile = profile
-        print(profile.__name__)
         super().__init__(self.profile.__name__, 'org.beeware.terminal')
 
     def clear(self):
@@ -75,11 +74,9 @@ class Terminal(toga.App):
     def scroll(self):
         """Scroll the screen up one line and clear the last line."""
         import time
-        t = time.perf_counter_ns()
         with self.screen as screen:
             screen.scroll(self.border_size[0], self.border_size[1], self.profile.screen_size[0], self.profile.screen_size[1], 0, -self.profile.character_size[1])
             screen.rect(self.border_size[0], self.border_size[1] + self.profile.screen_size[1] - self.profile.character_size[1], self.profile.screen_size[0], self.profile.character_size[1], self.background_color)
-        print(time.perf_counter_ns() - t)
 
     def print(self, text):
         position = self.cursor.position

@@ -7,7 +7,8 @@ from toga_qt.keys import qt_to_toga_key
 from toga.handlers import WeakrefCallable
 from toga_qt.widgets.base import Widget
 
-from .bitmap import RGBA32, Bitmap
+from .bitmap import Bitmap
+from .pixel_format import RGBA32
 
 
 class QBitmapView(QLabel):

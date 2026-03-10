@@ -1,57 +1,56 @@
 from ctypes import (
-    c_double, c_void_p, c_ubyte, c_size_t, c_bool, c_ulong, POINTER, c_long
+    c_void_p, c_ubyte, c_size_t, c_bool, c_int32, c_uint32, POINTER
 )
 
-from rubicon.objc import CGRect, objc_method
+from rubicon.objc import CGFloat, objc_method
 from rubicon.objc.types import register_preferred_encoding
 from travertino.size import at_least
 
 from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import core_graphics, NSView, NSRect, NSGraphicsContext
+from toga_cocoa.libs import (
+    core_graphics,
+    NSView,
+    NSRect,
+    NSGraphicsContext,
+    CGImageRef,
+    kCGImageAlphaNone,
+    kCGBitmapByteOrderDefault
+)
 from toga_cocoa.widgets.base import Widget
 
-from .bitmap import Bitmap, RGB24
+from .bitmap import Bitmap
+from .pixel_format import RGB24
 
 
-######################################################################
-# CoreGraphics constants
-######################################################################
-
-kCGBitmapByteOrderDefault = 0
-kCGImageAlphaNone = 0
-kCGRenderingIntentDefault = 0
 
 ######################################################################
-# CoreGraphics data types
-######################################################################
-
-CGFloat = c_double
-CGBitmapInfo = c_ulong
-CGColorRenderingIntent = c_long
-
-CGContextRef = c_void_p
-register_preferred_encoding(b'^{__CGContext=}', CGContextRef)
-
-CGDataProviderRef = c_void_p
-register_preferred_encoding(b'^{__CGDataProvider=}', CGDataProviderRef)
+# CGColorSpace.h
 
 CGColorSpaceRef = c_void_p
 register_preferred_encoding(b'^{__CGColorSpace=}', CGColorSpaceRef)
 
-CGImageRef = c_void_p
-register_preferred_encoding(b'^{__CGImage=}', CGImageRef)
+core_graphics.CGColorSpaceCreateDeviceRGB.argtypes = []
+core_graphics.CGColorSpaceCreateDeviceRGB.restype = CGColorSpaceRef
+
+CGColorRenderingIntent = c_int32
+
+kCGRenderingIntentDefault = 0
 
 ######################################################################
-# CoreGraphics methods
-######################################################################
+# CGDataProvider.h
+
+CGDataProviderRef = c_void_p
+register_preferred_encoding(b'^{__CGDataProvider=}', CGDataProviderRef)
 
 core_graphics.CGDataProviderCreateWithData.argtypes = [
     c_void_p, c_void_p, c_size_t, c_void_p
 ]
 core_graphics.CGDataProviderCreateWithData.restype = CGDataProviderRef
 
-core_graphics.CGColorSpaceCreateDeviceRGB.argtypes = []
-core_graphics.CGColorSpaceCreateDeviceRGB.restype = CGColorSpaceRef
+######################################################################
+# CGImage.h
+
+CGBitmapInfo = c_uint32
 
 core_graphics.CGImageCreate.argtypes = [
     c_size_t, c_size_t, c_size_t, c_size_t, c_size_t,
@@ -59,11 +58,6 @@ core_graphics.CGImageCreate.argtypes = [
     POINTER(CGFloat), c_bool, CGColorRenderingIntent
 ]
 core_graphics.CGImageCreate.restype = CGImageRef
-
-core_graphics.CGContextDrawImage.argtypes = [
-    CGContextRef, CGRect, CGImageRef
-]
-core_graphics.CGContextDrawImage.restype = None
 
 
 ######################################################################
@@ -191,7 +185,8 @@ class BitmapView(Widget):
     def update_display(self):
         """Request an update of the bitmap display.
 
-        The update may be suspended if the
+        The update may be suspended in which case changes will only
+        show when updates resume.
         """
         if self._suspended:
             self._update_pending = True
