@@ -1,5 +1,3 @@
-from travertino.size import at_least
-
 from toga_dummy.widgets.base import Widget
 
 from .bitmap import Bitmap
@@ -58,8 +56,7 @@ class BitmapView(Widget):
         self._suspended += 1
 
     def update_display(self):
-        """Request an update of the bitmap display.
-        """
+        """Request an update of the bitmap display."""
         if self._suspended:
             self._update_pending = True
             self._action("update pending")

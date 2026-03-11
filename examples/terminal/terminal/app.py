@@ -40,27 +40,49 @@ class Cursor:
 class Terminal(toga.App):
     def __init__(self, profile):
         self.profile = profile
-        super().__init__(self.profile.__name__, 'org.beeware.terminal')
+        super().__init__(self.profile.__name__, "org.beeware.terminal")
 
     def clear(self):
         with self.screen as screen:
             if self.border_size[0] != 0 or self.border_size[1] != 0:
-                screen.rect(0, 0, screen.size[0], self.border_size[1], self.border_color)
-                screen.rect(0, self.border_size[1], self.border_size[0], self.profile.screen_size[1], self.border_color)
-                screen.rect(self.border_size[0] + self.profile.screen_size[0], self.border_size[1], self.border_size[0], self.profile.screen_size[1], self.border_color)
-                screen.rect(0, self.border_size[1] + self.profile.screen_size[1], screen.size[0], self.border_size[1], self.border_color)
-            screen.rect(self.border_size[0], self.border_size[1], self.profile.screen_size[0], self.profile.screen_size[1], self.background_color)
+                screen.rect(
+                    0, 0, screen.size[0], self.border_size[1], self.border_color
+                )
+                screen.rect(
+                    0,
+                    self.border_size[1],
+                    self.border_size[0],
+                    self.profile.screen_size[1],
+                    self.border_color,
+                )
+                screen.rect(
+                    self.border_size[0] + self.profile.screen_size[0],
+                    self.border_size[1],
+                    self.border_size[0],
+                    self.profile.screen_size[1],
+                    self.border_color,
+                )
+                screen.rect(
+                    0,
+                    self.border_size[1] + self.profile.screen_size[1],
+                    screen.size[0],
+                    self.border_size[1],
+                    self.border_color,
+                )
+            screen.rect(
+                self.border_size[0],
+                self.border_size[1],
+                self.profile.screen_size[0],
+                self.profile.screen_size[1],
+                self.background_color,
+            )
         self.start_cursor()
 
     def draw_char(self, pos, char):
         """Draw a single character at the given cursor position"""
         with self.screen as screen:
-            origin_x = (
-                self.border_size[0] + self.profile.character_size[0] * pos[0]
-            )
-            origin_y = (
-                self.border_size[1] + self.profile.character_size[1] * pos[1]
-            )
+            origin_x = self.border_size[0] + self.profile.character_size[0] * pos[0]
+            origin_y = self.border_size[1] + self.profile.character_size[1] * pos[1]
             for x in range(0, self.profile.character_size[0]):
                 bitmap = self.profile.font[ord(char)]
                 for y in range(0, self.profile.character_size[1]):
@@ -73,22 +95,42 @@ class Terminal(toga.App):
 
     def scroll(self):
         """Scroll the screen up one line and clear the last line."""
-        import time
         with self.screen as screen:
-            screen.scroll(self.border_size[0], self.border_size[1], self.profile.screen_size[0], self.profile.screen_size[1], 0, -self.profile.character_size[1])
-            screen.rect(self.border_size[0], self.border_size[1] + self.profile.screen_size[1] - self.profile.character_size[1], self.profile.screen_size[0], self.profile.character_size[1], self.background_color)
+            screen.scroll(
+                self.border_size[0],
+                self.border_size[1],
+                self.profile.screen_size[0],
+                self.profile.screen_size[1],
+                0,
+                -self.profile.character_size[1],
+            )
+            screen.rect(
+                self.border_size[0],
+                self.border_size[1]
+                + self.profile.screen_size[1]
+                - self.profile.character_size[1],
+                self.profile.screen_size[0],
+                self.profile.character_size[1],
+                self.background_color,
+            )
 
     def print(self, text):
         position = self.cursor.position
         for char in text:
-            if char == '\n':
+            if char == "\n":
                 position = (0, position[1] + 1)
             else:
                 self.draw_char(position, char)
                 position = (position[0] + 1, position[1])
-            if position[0] * self.profile.character_size[0] >= self.profile.screen_size[0]:
+            if (
+                position[0] * self.profile.character_size[0]
+                >= self.profile.screen_size[0]
+            ):
                 position = (0, position[1] + 1)
-            if position[1] * self.profile.character_size[1] >= self.profile.screen_size[1]:
+            if (
+                position[1] * self.profile.character_size[1]
+                >= self.profile.screen_size[1]
+            ):
                 position = (position[0], position[1] - 1)
                 self.scroll()
 
@@ -97,17 +139,16 @@ class Terminal(toga.App):
 
     def keypress(self, widget, key=None, modifiers=None, **kwargs):
         if key == toga.Key.ENTER:
-            self.draw_char(self.cursor.position, ' ')
-            self.print('\n')
+            self.draw_char(self.cursor.position, " ")
+            self.print("\n")
         elif key == toga.Key.BACKSPACE:
-            self.draw_char(self.cursor.position, ' ')
-            self.start_cursor((
-                max(0, self.cursor.position[0] - 1),
-                self.cursor.position[1]
-            ))
+            self.draw_char(self.cursor.position, " ")
+            self.start_cursor(
+                (max(0, self.cursor.position[0] - 1), self.cursor.position[1])
+            )
         elif key.is_printable():
             if toga.Key.MOD_1 in modifiers:
-                self.print('^{}'.format(key.value.upper()))
+                self.print("^{}".format(key.value.upper()))
             elif toga.Key.SHIFT in modifiers:
                 self.print(key.value.upper())
             else:
@@ -130,8 +171,7 @@ class Terminal(toga.App):
         self.main_window = toga.MainWindow(size=(800, 600))
 
         self.screen = BitmapView(
-            size=self.profile.full_screen_size,
-            on_key_press=self.keypress
+            size=self.profile.full_screen_size, on_key_press=self.keypress
         )
 
         self.main_window.content = self.screen
@@ -143,7 +183,7 @@ class Terminal(toga.App):
 
         self.border_size = [
             (self.profile.full_screen_size[0] - self.profile.screen_size[0]) // 2,
-            (self.profile.full_screen_size[1] - self.profile.screen_size[1]) // 2
+            (self.profile.full_screen_size[1] - self.profile.screen_size[1]) // 2,
         ]
 
         self.clear()
@@ -155,19 +195,23 @@ class Terminal(toga.App):
 
 def main():
     from .profiles import commodore64
+
     return Terminal(commodore64)
 
 
 def c64():
     from .profiles import commodore64
+
     return Terminal(commodore64).main_loop()
 
 
 def microbee():
     from .profiles import microbee
+
     return Terminal(microbee).main_loop()
 
 
 def zxspectrum():
     from .profiles import zxspectrum
+
     return Terminal(zxspectrum).main_loop()

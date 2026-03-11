@@ -3,14 +3,13 @@ from __future__ import annotations
 from functools import cached_property
 from typing import Any, Protocol
 
-from travertino.colors import Color, rgb
+from travertino.colors import Color
 
 import toga
 from toga.handlers import wrapped_handler
 from toga.platform import get_factory
 
 from .bitmap import Bitmap
-
 
 
 class OnKeyPressHandler(Protocol):
@@ -52,7 +51,7 @@ class BitmapView(toga.Widget):
         on_gain_focus: OnGainFocusHandler | None = None,
         on_lose_focus: OnLoseFocusHandler | None = None,
         enabled: bool = True,
-        **kwargs
+        **kwargs,
     ):
         """Create a new single-line text input widget.
 
@@ -71,9 +70,7 @@ class BitmapView(toga.Widget):
         """
         self._size = size
 
-        super().__init__(
-            id=id, style=style, **kwargs
-        )
+        super().__init__(id=id, style=style, **kwargs)
 
         # Set handlers
         self.on_key_press = on_key_press
@@ -90,11 +87,11 @@ class BitmapView(toga.Widget):
         return self.factory.BitmapView(interface=self)
 
     @property
-    def size(self):
+    def size(self) -> tuple[int, int]:
         return self._size
 
     @property
-    def bitmap(self):
+    def bitmap(self) -> Bitmap:
         return self._impl.bitmap
 
     def set(self, x: int, y: int, color: Color):

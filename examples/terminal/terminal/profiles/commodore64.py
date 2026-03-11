@@ -609,7 +609,7 @@ def map_font(ch):
 
 
 # Commodore 64 screen profile
-__name__ = 'Commodore 64'
+__name__ = "Commodore 64"
 
 # Commodore64 'full screen' is 403 pixels wide x 284 pixels high,
 # including the border area
@@ -624,22 +624,22 @@ character_size = (8, 8)
 # Commodore 64 colors - see the very interesting article here:
 #    http://unusedino.de/ec64/technical/misc/vic656x/colors/
 colors = [
-    Color.parse('#000000'),  # 0  black
-    Color.parse('#FFFFFF'),  # 1  white
-    Color.parse('#68372B'),  # 2  red
-    Color.parse('#70A4B2'),  # 3  cyan
-    Color.parse('#6F3D86'),  # 4  purple
-    Color.parse('#588D43'),  # 5  green
-    Color.parse('#352879'),  # 6  blue
-    Color.parse('#B8C76F'),  # 7  yellow
-    Color.parse('#6F4F25'),  # 8  orange
-    Color.parse('#433900'),  # 9  brown
-    Color.parse('#9A6759'),  # 10 light red
-    Color.parse('#444444'),  # 11 dark grey
-    Color.parse('#6C6C6C'),  # 12 grey
-    Color.parse('#9AD284'),  # 13 light green
-    Color.parse('#6C5EB5'),  # 14 light blue
-    Color.parse('#959595'),  # 15 light grey
+    Color.parse("#000000"),  # 0  black
+    Color.parse("#FFFFFF"),  # 1  white
+    Color.parse("#68372B"),  # 2  red
+    Color.parse("#70A4B2"),  # 3  cyan
+    Color.parse("#6F3D86"),  # 4  purple
+    Color.parse("#588D43"),  # 5  green
+    Color.parse("#352879"),  # 6  blue
+    Color.parse("#B8C76F"),  # 7  yellow
+    Color.parse("#6F4F25"),  # 8  orange
+    Color.parse("#433900"),  # 9  brown
+    Color.parse("#9A6759"),  # 10 light red
+    Color.parse("#444444"),  # 11 dark grey
+    Color.parse("#6C6C6C"),  # 12 grey
+    Color.parse("#9AD284"),  # 13 light green
+    Color.parse("#6C5EB5"),  # 14 light blue
+    Color.parse("#959595"),  # 15 light grey
 ]
 
 default_border_color = 14  # light blue
@@ -648,10 +648,7 @@ default_text_color = 14  # light blue
 
 # C64 has an 'odd' character set / font due to the uppercase/graphics and
 # lowercase/uppercase 'modes' of printing
-font = [
-    map_font(ch)
-    for ch in range(0, 255)
-]
+font = [map_font(ch) for ch in range(0, 255)]
 
 # The character code to use for the cursor (' ')
 cursor_char = 32
@@ -659,10 +656,10 @@ cursor_char = 32
 # Cursor blink delay (in ms)
 cursor_blink_delay = 500
 
-boot_text = '''
+boot_text = """
     **** COMMODORE 64 BASIC V2 ****
 
  64K RAM SYSTEM  38911 BASIC BYTES FREE
 
 READY.
-'''
+"""

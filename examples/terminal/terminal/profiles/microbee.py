@@ -278,7 +278,7 @@ MICROBEE_FONT = [
 
 # Microbee screen profile
 # http://harveycohen.net/oznaki/microbee.html
-__name__ = 'MicroBee'
+__name__ = "MicroBee"
 
 # Microbee 'full screen' is 512 pixels wide x 256 pixels high,
 # including the border area
@@ -292,8 +292,8 @@ character_size = (8, 16)
 
 # Microbee colors (monochrome display)
 colors = [
-    Color.parse('#000000'),  # black
-    Color.parse('#00FF00'),  # green
+    Color.parse("#000000"),  # black
+    Color.parse("#00FF00"),  # green
 ]
 
 default_border_color = 0  # black
@@ -309,6 +309,6 @@ cursor_char = 95
 # Cursor blink delay (in ms)
 cursor_blink_delay = 500
 
-boot_text = '''Applied Technology MicroBee Colour Basic. Ver 6.00
+boot_text = """Applied Technology MicroBee Colour Basic. Ver 6.00
 
->'''
+>"""

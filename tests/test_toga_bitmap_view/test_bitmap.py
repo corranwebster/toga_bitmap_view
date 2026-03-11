@@ -16,10 +16,7 @@ sample_mask = """
 ..xxx..
 """
 
-sample_palette = {
-    '.': BLACK,
-    'x': WHITE
-}
+sample_palette = {".": BLACK, "x": WHITE}
 
 
 def sample_bytes(
@@ -28,8 +25,7 @@ def sample_bytes(
 ):
     """Generate a bytearray from string and palette."""
     sample = b"".join(
-        b"".join(palette[char].bytes for char in line.strip())
-        for line in mask.strip()
+        b"".join(palette[char].bytes for char in line.strip()) for line in mask.strip()
     )
     return bytearray(sample)
 
@@ -174,7 +170,11 @@ def test_set_rect_pixel():
 
     bitmap.set_rect(1, 2, 2, 3, RED)
     assert all(
-        bitmap.get_pixel(x, y) == RED if (1 <= x < 3 and 2 <= y < 5) else bitmap.get_pixel(x, y) != RED
+        (
+            bitmap.get_pixel(x, y) == RED
+            if (1 <= x < 3 and 2 <= y < 5)
+            else bitmap.get_pixel(x, y) != RED
+        )
         for x in range(7)
         for y in range(5)
     )
@@ -203,8 +203,8 @@ def test_set_rect_bitmap_other_format():
     bitmap = Bitmap((7, 5), sample_bytes())
 
     palette = {
-        '.': RGBA32((0, 0, 0, 0)),
-        'x': RGBA32((255, 255, 255, 255)),
+        ".": RGBA32((0, 0, 0, 0)),
+        "x": RGBA32((255, 255, 255, 255)),
     }
     source = Bitmap((2, 3), sample_bytes(".x\n.x\nx.", palette), format=RGBA32)
 
@@ -283,13 +283,13 @@ def test_getitem_slice_and_item():
     assert rect_bitmap.format == RGB24
     assert rect_bitmap.bytes == bytes(sample_bytes("x."))
 
+
 def test_getitem_slice_no_step():
     """Test __getitem__ method with a slices."""
     bitmap = Bitmap((7, 5), sample_bytes())
 
     with pytest.raises(IndexError):
         bitmap[1:3:2, 2:5]
-
 
     with pytest.raises(IndexError):
         bitmap[1:3, 2:5:-1]
@@ -351,7 +351,11 @@ def test_setitem_slice_and_index_pixel():
     bitmap = Bitmap((7, 5), sample_bytes())
     bitmap[1:3, 2:5] = RED
     assert all(
-        bitmap.get_pixel(x, y) == RED if (1 <= x < 3 and 2 <= y < 5) else bitmap.get_pixel(x, y) != RED
+        (
+            bitmap.get_pixel(x, y) == RED
+            if (1 <= x < 3 and 2 <= y < 5)
+            else bitmap.get_pixel(x, y) != RED
+        )
         for x in range(7)
         for y in range(5)
     )
@@ -359,7 +363,11 @@ def test_setitem_slice_and_index_pixel():
     bitmap = Bitmap((7, 5), sample_bytes())
     bitmap[1, 2:5] = RED
     assert all(
-        bitmap.get_pixel(x, y) == RED if (x == 1 and 2 <= y < 5) else bitmap.get_pixel(x, y) != RED
+        (
+            bitmap.get_pixel(x, y) == RED
+            if (x == 1 and 2 <= y < 5)
+            else bitmap.get_pixel(x, y) != RED
+        )
         for x in range(7)
         for y in range(5)
     )
@@ -367,10 +375,15 @@ def test_setitem_slice_and_index_pixel():
     bitmap = Bitmap((7, 5), sample_bytes())
     bitmap[1:3, 2] = RED
     assert all(
-        bitmap.get_pixel(x, y) == RED if (1 <= x < 3 and y == 2) else bitmap.get_pixel(x, y) != RED
+        (
+            bitmap.get_pixel(x, y) == RED
+            if (1 <= x < 3 and y == 2)
+            else bitmap.get_pixel(x, y) != RED
+        )
         for x in range(7)
         for y in range(5)
     )
+
 
 def test_setitem_slice_bitmap():
     """Test setitem method with a bitmap."""
@@ -388,6 +401,7 @@ def test_setitem_slice_bitmap():
         .x.xx..
         """
     )
+
 
 def test_setitem_slice_size_mismatch():
     """Test setitem method with a bitmap which is too big."""
@@ -421,14 +435,15 @@ def test_setitem_slice_size_mismatch():
         """
     )
 
+
 def test_setitem_slice_bitmap_format():
     """Test setitem method with a bitmap in a different format."""
     bitmap = Bitmap((7, 5), sample_bytes())
     source = Bitmap((2, 3), sample_bytes(".x\n.x\nx."))
 
     palette = {
-        '.': RGBA32((0, 0, 0, 0)),
-        'x': RGBA32((255, 255, 255, 255)),
+        ".": RGBA32((0, 0, 0, 0)),
+        "x": RGBA32((255, 255, 255, 255)),
     }
     source = Bitmap((2, 3), sample_bytes(".x\n.x\nx.", palette), format=RGBA32)
 
@@ -443,6 +458,7 @@ def test_setitem_slice_bitmap_format():
         .x.xx..
         """
     )
+
 
 def test_scroll_rect_full():
     """Test scrolling."""
@@ -473,6 +489,7 @@ def test_scroll_rect_full():
         ..xxx..
         """
     )
+
 
 def test_scroll_rect():
     """Test scrolling."""

@@ -9,6 +9,7 @@ from travertino.colors import Color, rgb
 class PixelFormat(Protocol):
     pixel_size: ClassVar[int]
     channel_bits: ClassVar[int]
+
     def __init__(self, value: bytes | bytearray): ...
     @classmethod
     def from_color(cls, color: Color) -> PixelFormat: ...

@@ -295,7 +295,7 @@ ZX_SPECTRUM_FONT = [
 
 # ZX Spectrum screen profile
 
-__name__ = 'ZX Spectrum'
+__name__ = "ZX Spectrum"
 
 # ZX Spectrum 'full screen' is 403 pixels wide x 312 pixels high,
 # including the border area
@@ -310,23 +310,23 @@ character_size = (8, 8)
 # ZX Spectrum  colors
 colors = [
     # dark
-    Color.parse('#000000'),  # black
-    Color.parse('#0000D7'),  # blue
-    Color.parse('#D70000'),  # red
-    Color.parse('#D700D7'),  # magenta
-    Color.parse('#00D700'),  # green
-    Color.parse('#00D7D7'),  # cyan
-    Color.parse('#D7D700'),  # yellow
-    Color.parse('#D7D7D7'),  # white
+    Color.parse("#000000"),  # black
+    Color.parse("#0000D7"),  # blue
+    Color.parse("#D70000"),  # red
+    Color.parse("#D700D7"),  # magenta
+    Color.parse("#00D700"),  # green
+    Color.parse("#00D7D7"),  # cyan
+    Color.parse("#D7D700"),  # yellow
+    Color.parse("#D7D7D7"),  # white
     # bright
-    Color.parse('#000000'),  # black
-    Color.parse('#0000FF'),  # blue
-    Color.parse('#FF0000'),  # red
-    Color.parse('#FF00FF'),  # magenta
-    Color.parse('#00FF00'),  # green
-    Color.parse('#00FFFF'),  # cyan
-    Color.parse('#FFFF00'),  # yellow
-    Color.parse('#FFFFFF'),  # white
+    Color.parse("#000000"),  # black
+    Color.parse("#0000FF"),  # blue
+    Color.parse("#FF0000"),  # red
+    Color.parse("#FF00FF"),  # magenta
+    Color.parse("#00FF00"),  # green
+    Color.parse("#00FFFF"),  # cyan
+    Color.parse("#FFFF00"),  # yellow
+    Color.parse("#FFFFFF"),  # white
 ]
 
 default_border_color = 0  # black
@@ -341,4 +341,4 @@ cursor_char = 32
 # Cursor blink delay (in ms)
 cursor_blink_delay = 500
 
-boot_text = ''
+boot_text = ""

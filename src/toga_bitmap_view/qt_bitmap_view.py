@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QLabel
 from travertino.size import at_least
 
 from toga_qt.keys import qt_to_toga_key
-from toga.handlers import WeakrefCallable
 from toga_qt.widgets.base import Widget
 
 from .bitmap import Bitmap
@@ -22,7 +21,7 @@ class QBitmapView(QLabel):
         key_sequence = QKeySequence(ev.keyCombination())
         keys = qt_to_toga_key(key_sequence)
         if keys is not None:
-            keys['text'] = ev.text()
+            keys["text"] = ev.text()
             self.interface.on_key_press(**keys)
 
 
@@ -38,7 +37,9 @@ class BitmapView(Widget):
         # create a bitmap around the memory
         self.bitmap = Bitmap(self.interface.size, self.memory, format=self._format)
         width, height = self.interface.size
-        self.native_image = QImage(self.memory, width, height, QImage.Format.Format_RGBA8888)
+        self.native_image = QImage(
+            self.memory, width, height, QImage.Format.Format_RGBA8888
+        )
 
         # Create an image from the pixel buffer.
         self.native = QBitmapView(self)
@@ -95,9 +96,7 @@ class BitmapView(Widget):
         if self._suspended:
             self._update_pending = True
         else:
-            self.native.setPixmap(
-                self.create_pixmap()
-            )
+            self.native.setPixmap(self.create_pixmap())
             self._update_pending = False
 
     def resume_updates(self):
@@ -112,7 +111,5 @@ class BitmapView(Widget):
 
         if self._suspended == 0:
             if self._update_pending:
-                self.native.setPixmap(
-                    self.create_pixmap()
-                )
+                self.native.setPixmap(self.create_pixmap())
                 self._update_pending = False

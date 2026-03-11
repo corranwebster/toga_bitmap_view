@@ -1,6 +1,4 @@
-from ctypes import (
-    c_void_p, c_ubyte, c_size_t, c_bool, c_int32, c_uint32, POINTER
-)
+from ctypes import c_void_p, c_ubyte, c_size_t, c_bool, c_int32, c_uint32, POINTER
 
 from rubicon.objc import CGFloat, objc_method
 from rubicon.objc.types import register_preferred_encoding
@@ -14,7 +12,7 @@ from toga_cocoa.libs import (
     NSGraphicsContext,
     CGImageRef,
     kCGImageAlphaNone,
-    kCGBitmapByteOrderDefault
+    kCGBitmapByteOrderDefault,
 )
 from toga_cocoa.widgets.base import Widget
 
@@ -22,12 +20,11 @@ from .bitmap import Bitmap
 from .pixel_format import RGB24
 
 
-
 ######################################################################
 # CGColorSpace.h
 
 CGColorSpaceRef = c_void_p
-register_preferred_encoding(b'^{__CGColorSpace=}', CGColorSpaceRef)
+register_preferred_encoding(b"^{__CGColorSpace=}", CGColorSpaceRef)
 
 core_graphics.CGColorSpaceCreateDeviceRGB.argtypes = []
 core_graphics.CGColorSpaceCreateDeviceRGB.restype = CGColorSpaceRef
@@ -40,10 +37,13 @@ kCGRenderingIntentDefault = 0
 # CGDataProvider.h
 
 CGDataProviderRef = c_void_p
-register_preferred_encoding(b'^{__CGDataProvider=}', CGDataProviderRef)
+register_preferred_encoding(b"^{__CGDataProvider=}", CGDataProviderRef)
 
 core_graphics.CGDataProviderCreateWithData.argtypes = [
-    c_void_p, c_void_p, c_size_t, c_void_p
+    c_void_p,
+    c_void_p,
+    c_size_t,
+    c_void_p,
 ]
 core_graphics.CGDataProviderCreateWithData.restype = CGDataProviderRef
 
@@ -53,9 +53,17 @@ core_graphics.CGDataProviderCreateWithData.restype = CGDataProviderRef
 CGBitmapInfo = c_uint32
 
 core_graphics.CGImageCreate.argtypes = [
-    c_size_t, c_size_t, c_size_t, c_size_t, c_size_t,
-    CGColorSpaceRef, CGBitmapInfo, CGDataProviderRef,
-    POINTER(CGFloat), c_bool, CGColorRenderingIntent
+    c_size_t,
+    c_size_t,
+    c_size_t,
+    c_size_t,
+    c_size_t,
+    CGColorSpaceRef,
+    CGBitmapInfo,
+    CGDataProviderRef,
+    POINTER(CGFloat),
+    c_bool,
+    CGColorRenderingIntent,
 ]
 core_graphics.CGImageCreate.restype = CGImageRef
 
@@ -63,6 +71,7 @@ core_graphics.CGImageCreate.restype = CGImageRef
 ######################################################################
 # Cocoa native widget implementation
 ######################################################################
+
 
 class TogaBitmapView(NSView):
     @objc_method
@@ -80,7 +89,11 @@ class TogaBitmapView(NSView):
             self._impl._format.pixel_size * self.interface.size[0],
             self._impl.rgb_colorspace,
             kCGBitmapByteOrderDefault | kCGImageAlphaNone,
-            data_provider, None, False, kCGRenderingIntentDefault)
+            data_provider,
+            None,
+            False,
+            kCGRenderingIntentDefault,
+        )
 
         core_graphics.CGContextDrawImage(cg_context, rect, image)
 
@@ -94,12 +107,9 @@ class TogaBitmapView(NSView):
 
     @objc_method
     def keyDown_(self, event) -> None:
-        from toga_cocoa.libs import NSEventModifierFlagCommand
         if self.interface.on_key_press:
             keys = toga_key(event)
-            self.interface.on_key_press(
-                **keys
-            )
+            self.interface.on_key_press(**keys)
 
     # @objc_method
     # def flagsChanged_(self, event) -> None:
@@ -120,9 +130,11 @@ class TogaBitmapView(NSView):
     #                 modifiers=self.modifiers
     #             )
 
+
 ######################################################################
 # Cocoa widget implementation
 ######################################################################
+
 
 class BitmapView(Widget):
     _format = RGB24

@@ -1,19 +1,11 @@
 from unittest.mock import Mock
 
-import pytest
-
 import toga
-from toga_dummy.utils import (
-    EventLog,
-    assert_action_not_performed,
-    assert_action_performed,
-    attribute_value,
-)
+from toga_dummy.utils import assert_action_performed
 from travertino.colors import rgb
 
 from toga_bitmap_view.bitmap import Bitmap
 from toga_bitmap_view.bitmap_view import BitmapView
-from toga_bitmap_view.pixel_format import RGB24, RGBA32
 
 
 def dummy_on_key_press(widget, **kwargs):
@@ -123,9 +115,7 @@ def test_on_key_press():
 
     assert bitmap_view._on_key_press._raw is handler
 
-    bitmap_view._impl.simulate_key_press(
-        toga.Key.A, {toga.Key.SHIFT}, 'A'
-    )
+    bitmap_view._impl.simulate_key_press(toga.Key.A, {toga.Key.SHIFT}, "A")
 
     handler.assert_called_once_with(
         bitmap_view,

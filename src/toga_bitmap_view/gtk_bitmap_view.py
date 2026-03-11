@@ -1,4 +1,4 @@
-from gi.repository import Gtk, Gdk, GdkPixbuf, GLib
+from gi.repository import GTK_VERSION, Gtk, GdkPixbuf, GLib
 from travertino.size import at_least
 
 from toga_gtk.keys import toga_key
