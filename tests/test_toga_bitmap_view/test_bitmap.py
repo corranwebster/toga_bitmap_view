@@ -63,6 +63,13 @@ def test_iterator():
     assert all([pixel == BLACK for pixel in bitmap])
 
 
+def test_len():
+    """Test length of bitmap (number of pixels)."""
+    bitmap = Bitmap((640, 480))
+
+    assert len(bitmap) == 640 * 480
+
+
 @pytest.mark.parametrize(
     "x,y,pixel",
     [

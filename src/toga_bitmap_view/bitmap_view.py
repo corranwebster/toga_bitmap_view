@@ -103,10 +103,10 @@ class BitmapView(toga.Widget):
     def rect(self, x: int, y: int, width: int, height: int, color: Color):
         self._impl.rect(x, y, width, height, color)
 
-    def get(self, x, y):
-        return rgb(self._impl.get(x, y))
+    def get(self, x: int, y: int) -> Color:
+        return self._impl.get(x, y)
 
-    def scroll(self, x, y, width, height, dx, dy):
+    def scroll(self, x: int, y: int, width: int, height: int, dx: int, dy: int):
         self._impl.scroll(x, y, width, height, dx, dy)
 
     def __enter__(self):

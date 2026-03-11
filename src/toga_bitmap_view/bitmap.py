@@ -71,6 +71,9 @@ class Bitmap:
                 offset += self._format.pixel_size
             offset = row_offset + self._stride
 
+    def __len__(self):
+        return self._size[0] * self._size[1]
+
     def _normalize(self, value, dimension):
         if value < 0:
              value += self._size[dimension]
