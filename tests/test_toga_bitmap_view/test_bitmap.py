@@ -1,12 +1,12 @@
 import pytest
 
 from toga_bitmap_view.bitmap import Bitmap
-from toga_bitmap_view.pixel_format import RGB24, RGBA32
+from toga_bitmap_view.pixel_format import RGB888, RGBA8888
 
-WHITE = RGB24((255, 255, 255))
-BLACK = RGB24((0, 0, 0))
-RED = RGB24((255, 0, 0))
-MAGENTA = RGB24((255, 0, 255))
+WHITE = RGB888((255, 255, 255))
+BLACK = RGB888((0, 0, 0))
+RED = RGB888((255, 0, 0))
+MAGENTA = RGB888((255, 0, 255))
 
 sample_mask = """
 ..xxx..
@@ -35,21 +35,27 @@ def test_create_empty():
     bitmap = Bitmap((640, 480))
 
     assert bitmap.size == (640, 480)
-    assert bitmap.format == RGB24
+    assert bitmap.format == RGB888
     assert bitmap.n_bytes == 640 * 480 * 3
     assert bitmap.bytes == b"\x00" * 640 * 480 * 3
 
 
 def test_to_format():
     """Test converting a bitmap to another pixel format."""
-    bitmap = Bitmap((640, 480), format=RGBA32)
+    bitmap = Bitmap((640, 480), format=RGBA8888)
 
-    result = bitmap.to_format(RGB24)
+    result = bitmap.to_format(RGB888)
 
     assert result.size == (640, 480)
-    assert result.format == RGB24
+    assert result.format == RGB888
     assert result.n_bytes == 640 * 480 * 3
     assert result.bytes == b"\x00" * 640 * 480 * 3
+
+    # same format returnd bitmap
+    bitmap = Bitmap((640, 480), format=RGB888)
+    result = bitmap.to_format(RGB888)
+
+    assert result is bitmap
 
 
 def test_iterator():
@@ -126,7 +132,7 @@ def test_set_pixel(x, y):
 @pytest.mark.parametrize(
     "x,y,pixel,result",
     [
-        (0, 0, RGBA32((255, 0, 0, 255)), RED),
+        (0, 0, RGBA8888((255, 0, 0, 255)), RED),
     ],
 )
 def test_set_pixel_other_format(x, y, pixel, result):
@@ -160,7 +166,7 @@ def test_get_rect():
 
     rect_bitmap = bitmap.get_rect(1, 2, 2, 3)
     assert rect_bitmap.size == (2, 3)
-    assert rect_bitmap.format == RGB24
+    assert rect_bitmap.format == RGB888
     assert rect_bitmap.bytes == bytes(sample_bytes("x.\nx.\n.x"))
 
 
@@ -203,10 +209,10 @@ def test_set_rect_bitmap_other_format():
     bitmap = Bitmap((7, 5), sample_bytes())
 
     palette = {
-        ".": RGBA32((0, 0, 0, 0)),
-        "x": RGBA32((255, 255, 255, 255)),
+        ".": RGBA8888((0, 0, 0, 0)),
+        "x": RGBA8888((255, 255, 255, 255)),
     }
-    source = Bitmap((2, 3), sample_bytes(".x\n.x\nx.", palette), format=RGBA32)
+    source = Bitmap((2, 3), sample_bytes(".x\n.x\nx.", palette), format=RGBA8888)
 
     bitmap.set_rect(1, 2, 2, 3, source)
 
@@ -265,7 +271,7 @@ def test_getitem_slice():
     rect_bitmap = bitmap[1:3, 2:5]
     assert isinstance(rect_bitmap, Bitmap)
     assert rect_bitmap.size == (2, 3)
-    assert rect_bitmap.format == RGB24
+    assert rect_bitmap.format == RGB888
     assert rect_bitmap.bytes == bytes(sample_bytes("x.\nx.\n.x"))
 
 
@@ -275,12 +281,12 @@ def test_getitem_slice_and_item():
 
     rect_bitmap = bitmap[1, 2:5]
     assert rect_bitmap.size == (1, 3)
-    assert rect_bitmap.format == RGB24
+    assert rect_bitmap.format == RGB888
     assert rect_bitmap.bytes == bytes(sample_bytes("x\nx\n."))
 
     rect_bitmap = bitmap[1:3, 2]
     assert rect_bitmap.size == (2, 1)
-    assert rect_bitmap.format == RGB24
+    assert rect_bitmap.format == RGB888
     assert rect_bitmap.bytes == bytes(sample_bytes("x."))
 
 
@@ -318,7 +324,7 @@ def test_setitem(x, y):
 @pytest.mark.parametrize(
     "x,y,pixel,result",
     [
-        (0, 0, RGBA32((255, 0, 0, 255)), RED),
+        (0, 0, RGBA8888((255, 0, 0, 255)), RED),
     ],
 )
 def test_setitem_other_format(x, y, pixel, result):
@@ -442,10 +448,10 @@ def test_setitem_slice_bitmap_format():
     source = Bitmap((2, 3), sample_bytes(".x\n.x\nx."))
 
     palette = {
-        ".": RGBA32((0, 0, 0, 0)),
-        "x": RGBA32((255, 255, 255, 255)),
+        ".": RGBA8888((0, 0, 0, 0)),
+        "x": RGBA8888((255, 255, 255, 255)),
     }
-    source = Bitmap((2, 3), sample_bytes(".x\n.x\nx.", palette), format=RGBA32)
+    source = Bitmap((2, 3), sample_bytes(".x\n.x\nx.", palette), format=RGBA8888)
 
     bitmap[1:3, 2:5] = source
 

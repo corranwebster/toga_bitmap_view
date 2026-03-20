@@ -1,11 +1,11 @@
 from toga_dummy.widgets.base import Widget
 
 from .bitmap import Bitmap
-from .pixel_format import RGBA32
+from .pixel_format import RGBA8888
 
 
 class BitmapView(Widget):
-    _format = RGBA32
+    _format = RGBA8888
 
     def create(self):
         self._action("create BitmapView")

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import overload
 
-from .pixel_format import RGB24, PixelFormat
+from .pixel_format import RGB888, PixelFormat
 
 
 class Bitmap:
@@ -13,7 +13,7 @@ class Bitmap:
         buffer: bytearray | memoryview | None = None,
         stride: int | None = None,
         offset: int | None = None,
-        format: type[PixelFormat] = RGB24,
+        format: type[PixelFormat] = RGB888,
     ):
         super().__init__()
         self._format = format

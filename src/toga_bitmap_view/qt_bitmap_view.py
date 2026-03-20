@@ -7,7 +7,7 @@ from toga_qt.keys import qt_to_toga_key
 from toga_qt.widgets.base import Widget
 
 from .bitmap import Bitmap
-from .pixel_format import RGBA32
+from .pixel_format import RGBA8888
 
 
 class QBitmapView(QLabel):
@@ -26,7 +26,7 @@ class QBitmapView(QLabel):
 
 
 class BitmapView(Widget):
-    _format = RGBA32
+    _format = RGBA8888
 
     def create(self):
         # Allocate a memory buffer to store pixel data.

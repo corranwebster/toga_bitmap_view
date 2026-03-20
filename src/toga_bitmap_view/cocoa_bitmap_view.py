@@ -17,7 +17,7 @@ from toga_cocoa.libs import (
 from toga_cocoa.widgets.base import Widget
 
 from .bitmap import Bitmap
-from .pixel_format import RGB24
+from .pixel_format import RGB888
 
 
 ######################################################################
@@ -76,6 +76,15 @@ core_graphics.CGImageCreate.restype = CGImageRef
 class TogaBitmapView(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
+        # Protect against unexpect pixel formats on implementation, won't test.
+        if not isinstance(self._impl._format.channel_bits, int):  # pragma: no cover
+            import warnings
+            warnings.warn(
+                "Cocoa BitmapView internal pixel format must have same number of "
+                "bits in each channel."
+            )
+            return
+
         cg_context = NSGraphicsContext.currentContext.CGContext
 
         data_provider = core_graphics.CGDataProviderCreateWithData(
@@ -137,7 +146,7 @@ class TogaBitmapView(NSView):
 
 
 class BitmapView(Widget):
-    _format = RGB24
+    _format = RGB888
 
     def create(self):
         self.native = TogaBitmapView.alloc().init()

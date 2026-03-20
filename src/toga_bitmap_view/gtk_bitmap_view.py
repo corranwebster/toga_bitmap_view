@@ -6,11 +6,11 @@ from toga.handlers import WeakrefCallable
 from toga_gtk.widgets.base import Widget
 
 from .bitmap import Bitmap
-from .pixel_format import RGB24
+from .pixel_format import RGB888
 
 
 class BitmapView(Widget):
-    _format = RGB24
+    _format = RGB888
 
     def create(self):
         # Allocate a memory buffer to store pixel data.
