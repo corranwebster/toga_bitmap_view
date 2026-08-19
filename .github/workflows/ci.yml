@@ -23,9 +23,13 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6.2.0
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python-version }}    - nm
     - name: Install dependencies
       run: |
+        sudo apt update -y
+        sudo apt install -y --no-install-recommends \
+          blackbox pkg-config python3-dev libgirepository-2.0-dev libcairo2-dev \
+          gir1.2-webkit2-4.1 gir1.2-xapp-1.0 gir1.2-geoclue-2.0 gir1.2-flatpak-1.0
         python -m pip install --upgrade pip
         pip install -e . --group test
     - name: Lint with flake8
