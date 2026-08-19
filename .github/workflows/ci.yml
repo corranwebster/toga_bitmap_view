@@ -10,6 +10,14 @@ on:
     branches: [ "main" ]
 
 jobs:
+  package:
+    name: Package Toga
+    uses: beeware/.github/.github/workflows/python-package-create.yml@main
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+
   build:
 
     runs-on: ubuntu-latest
