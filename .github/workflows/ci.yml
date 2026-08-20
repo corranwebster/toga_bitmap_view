@@ -21,18 +21,15 @@ jobs:
   style:
     name: Style ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
     steps:
     - name: Checkout
       uses: actions/checkout@v6.0.2
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@v7
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.14"
+        cache: 'pip'
 
     - name: Install dependencies
       run: |
@@ -54,16 +51,17 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ "macos-latest", "ubuntu-latest" ]
-        python-version: [ "3.13" ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14", "3.15" ]
 
     steps:
     - name: Checkout
       uses: actions/checkout@v6.0.2
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Get Packages
       uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
@@ -88,9 +86,5 @@ jobs:
     - name: Test dummy with pytest
       env:
         TOGA_BACKEND: toga_dummy
-      run: |
-        pytest tests -v
-
-    - name: Test native with pytest
       run: |
         pytest tests -v
