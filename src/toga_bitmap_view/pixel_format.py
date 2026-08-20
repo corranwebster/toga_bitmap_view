@@ -7,16 +7,27 @@ from travertino.colors import Color, rgb
 
 @runtime_checkable
 class PixelFormat(Protocol):
+    """A representation of a pixel as a group of bytes."""
     pixel_size: ClassVar[int]
-    channel_bits: ClassVar[int | tuple[int, int, int] | tuple[int, int, int]]
+    channel_bits: ClassVar[int | tuple[int, int, int] | tuple[int, int, int, int]]
 
-    def __init__(self, value: bytes | bytearray): ...
+    def __init__(self, value: bytes | bytearray):
+        ...
+
     @classmethod
-    def from_color(cls, color: Color) -> PixelFormat: ...
+    def from_color(cls, color: Color) -> PixelFormat:
+        """Create a pixel from a color specification."""
+        ...
+
     @property
-    def bytes(self) -> bytes: ...
+    def bytes(self) -> bytes:
+        """The bytes that represent the pixel."""
+        ...
+
     @property
-    def color(self) -> Color: ...
+    def color(self) -> Color:
+        """The color that corresponds to the pixel."""
+        ...
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, type(self)):

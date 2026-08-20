@@ -59,7 +59,7 @@ class Bitmap:
             )
 
     def to_format(self, format: type[PixelFormat]) -> Bitmap:
-        if type(self._format) is format:
+        if self._format == format:
             return self
         else:
             result = Bitmap(self._size, format=format)

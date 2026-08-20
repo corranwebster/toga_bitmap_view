@@ -1,7 +1,9 @@
+
 import pytest
 
 from toga_bitmap_view.bitmap import Bitmap
 from toga_bitmap_view.pixel_format import RGB888, RGBA8888
+
 
 WHITE = RGB888((255, 255, 255))
 BLACK = RGB888((0, 0, 0))
@@ -40,7 +42,7 @@ def test_create_empty():
     assert bitmap.bytes == b"\x00" * 640 * 480 * 3
 
 
-def test_to_format():
+def test_to_format_different():
     """Test converting a bitmap to another pixel format."""
     bitmap = Bitmap((640, 480), format=RGBA8888)
 
@@ -51,8 +53,10 @@ def test_to_format():
     assert result.n_bytes == 640 * 480 * 3
     assert result.bytes == b"\x00" * 640 * 480 * 3
 
-    # same format returnd bitmap
+def test_to_format_same():
+    """Test converting a bitmap to the same format"""
     bitmap = Bitmap((640, 480), format=RGB888)
+
     result = bitmap.to_format(RGB888)
 
     assert result is bitmap
