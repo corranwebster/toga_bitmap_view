@@ -120,25 +120,6 @@ class TogaBitmapView(NSView):
             keys = toga_key(event)
             self.interface.on_key_press(**keys)
 
-    # @objc_method
-    # def flagsChanged_(self, event) -> None:
-    #     if self.interface.on_key_press:
-    #         old_modifiers = self.modifiers
-    #         self.modifiers = toga_modifiers(event.modifierFlags)
-    #         mods_press = self.modifiers - old_modifiers
-    #         # mods_release = old_modifiers - self.modifiers
-
-    #         if mods_press:
-    #             self.interface.on_key_press(
-    #                 self.interface,
-    #                 modifiers=self.modifiers
-    #             )
-    #         elif mods_release:
-    #             self.interface.on_key_release(
-    #                 self.interface,
-    #                 modifiers=self.modifiers
-    #             )
-
 
 ######################################################################
 # Cocoa widget implementation

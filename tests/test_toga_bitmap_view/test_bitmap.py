@@ -1,7 +1,9 @@
+
 import pytest
 
 from toga_bitmap_view.bitmap import Bitmap
 from toga_bitmap_view.pixel_format import RGB888, RGBA8888
+
 
 WHITE = RGB888((255, 255, 255))
 BLACK = RGB888((0, 0, 0))
