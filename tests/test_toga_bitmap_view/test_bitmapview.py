@@ -5,7 +5,7 @@ from toga_dummy.utils import assert_action_performed
 from travertino.colors import rgb
 
 from toga_bitmap_view.bitmap import Bitmap
-from toga_bitmap_view.bitmap_view import BitmapView
+from toga_bitmap_view.bitmapview import BitmapView
 
 
 def dummy_on_key_press(widget, **kwargs):
