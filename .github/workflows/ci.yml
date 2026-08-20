@@ -19,6 +19,7 @@ jobs:
       attestations: write
 
   style:
+    name: Test ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -46,7 +47,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   test:
-
+    name: Test ${{ matrix.platform }} ${{ matrix.python-version }}
+    runs-on: ${{ matrix.platform }}
+    needs: [ package ]
     strategy:
       fail-fast: false
       matrix:
