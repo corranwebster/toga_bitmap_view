@@ -81,7 +81,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ../$(ls dist/toga_bitmap_view-*.whl) --group test
+        pip install ./dist/toga_bitmap_view-*.whl --group test
 
     - name: Test with pytest
       env:
