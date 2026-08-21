@@ -2,7 +2,7 @@ import asyncio
 
 import toga
 
-from toga_bitmap_view.bitmap_view import BitmapView
+from toga_bitmap_view.bitmapview import BitmapView
 
 
 class Cursor:

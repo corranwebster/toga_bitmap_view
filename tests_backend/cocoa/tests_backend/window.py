@@ -1,0 +1,176 @@
+import asyncio
+
+from rubicon.objc import objc_id, send_message
+
+from toga.constants import WindowState
+from toga_cocoa.libs import NSWindow, NSWindowStyleMask
+
+from .dialogs import DialogsMixin
+from .probe import BaseProbe
+
+
+class WindowProbe(BaseProbe, DialogsMixin):
+    supports_closable = True
+    supports_minimizable = True
+    supports_move_while_hidden = True
+    supports_unminimize = True
+    supports_minimize = True
+    supports_placement = True
+    supports_as_image = True
+    supports_focus = True
+    fullscreen_presentation_equal_size = False
+    maximize_fullscreen_presentation_equal_size = False
+
+    def __init__(self, app, window):
+        super().__init__()
+        self.app = app
+        self.window = window
+        self.impl = window._impl
+        self.native = window._impl.native
+        assert isinstance(self.native, NSWindow)
+
+    async def wait_for_window(
+        self,
+        message,
+        state=None,
+    ):
+        await self.redraw(message, delay=0.1)
+
+        if state:
+            timeout = 5
+            polling_interval = 0.1
+            # Number of consecutive polls the window's size must be unchanged for
+            # before considering the state transition fully settled. See #3897.
+            required_stable_polls = 2
+            exception = None
+            stable_polls = 0
+            last_size = None
+            loop = asyncio.get_running_loop()
+            start_time = loop.time()
+            while (loop.time() - start_time) < timeout:
+                try:
+                    assert self.instantaneous_state == state
+                    assert self.window._impl._pending_state_transition is None
+                    current_size = self.window.size
+                    if current_size == last_size:
+                        stable_polls += 1
+                        if stable_polls >= required_stable_polls:
+                            return
+                    else:
+                        stable_polls = 0
+                    last_size = current_size
+                except AssertionError as e:
+                    exception = e
+                    stable_polls = 0
+                    last_size = None
+                await asyncio.sleep(polling_interval)
+            if exception:
+                raise exception
+            raise AssertionError(
+                f"Window size did not stabilize in {state} state within {timeout}s"
+            )
+
+    async def cleanup(self):
+        # Store the pre closing window state as determination of window state after
+        # closing the window is unreliable.
+        pre_close_window_state = self.window.state
+        self.window.close()
+        # We need to use fixed length delays here as NSWindow.close() is non-blocking in
+        # nature, and NSWindow doesn't provide a reliable indicator to indicate
+        # completion of all operations related to window closing.
+        match pre_close_window_state:
+            case WindowState.FULLSCREEN:
+                delay = 1
+            case WindowState.MINIMIZED:
+                delay = 0.5
+            case _:
+                delay = 0.1
+        await self.redraw("Closing window", delay=delay)
+
+    def close(self):
+        self.native.performClose(None)
+
+    @property
+    def content_size(self):
+        return (
+            self.impl.container.native.frame.size.width,
+            self.impl.container.native.frame.size.height,
+        )
+
+    @property
+    def is_resizable(self):
+        return bool(self.native.styleMask & NSWindowStyleMask.Resizable)
+
+    @property
+    def is_closable(self):
+        return bool(self.native.styleMask & NSWindowStyleMask.Closable)
+
+    @property
+    def is_minimizable(self):
+        return bool(self.native.styleMask & NSWindowStyleMask.Miniaturizable)
+
+    @property
+    def is_minimized(self):
+        return bool(self.native.isMiniaturized)
+
+    def minimize(self):
+        self.native.performMiniaturize(None)
+
+    def unminimize(self):
+        self.native.deminiaturize(None)
+
+    @property
+    def instantaneous_state(self):
+        return self.impl.get_window_state(in_progress_state=False)
+
+    def has_toolbar(self):
+        return self.native.toolbar is not None
+
+    def assert_is_toolbar_separator(self, index, section=False):
+        # macOS doesn't display separators, so there's nothing to assert.
+        pass
+
+    def assert_toolbar_item(self, index, separators, label, tooltip, has_icon, enabled):
+        item = self.native.toolbar.items[index - separators]
+
+        assert str(item.label) == label
+        assert (None if item.toolTip is None else str(item.toolTip)) == tooltip
+        assert (item.image is not None) == has_icon
+        assert item.isEnabled() == enabled
+
+    def press_toolbar_button(self, index):
+        item = self.native.toolbar.items[index]
+        send_message(
+            item.target,
+            item.action,
+            item,
+            restype=None,
+            argtypes=[objc_id],
+        )
+
+    def _setup_alert_dialog_result(self, dialog, result, pre_close_test_method=None):
+        # Install an overridden show method that invokes the original, but then closes
+        # the open dialog.
+        orig_show = dialog._impl.show
+
+        def automated_show(host_window, future):
+            orig_show(host_window, future)
+            try:
+                if pre_close_test_method:
+                    pre_close_test_method(dialog)
+            finally:
+                try:
+                    dialog._impl.host_window.endSheet(
+                        dialog._impl.host_window.attachedSheet,
+                        returnCode=result,
+                    )
+                except Exception as e:
+                    # An error occurred closing the dialog; that means the dialog isn't
+                    # what as expected, so record that in the future.
+                    future.set_exception(e)
+
+        dialog._impl.show = automated_show
+
+    def _setup_file_dialog_result(self, dialog, result):
+        # Closing a window modal file dialog is the same as alerts.
+        self._setup_alert_dialog_result(dialog, result)

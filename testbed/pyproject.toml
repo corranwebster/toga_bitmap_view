@@ -1,0 +1,158 @@
+[project]
+name = "testbed"
+version = "0.0.1"
+
+[project.optional-dependencies]
+test = [
+    "coverage==7.15.4",
+    "coverage-conditional-plugin == 0.9.0",
+    # fonttools is only needed by Android, but we need to use sys.platform == 'linux'
+    # for < 3.13 there's no dependency identifier that can target Android exclusively
+    # before 3.13.
+    "fonttools==4.63.0 ; python_version < '3.13' and sys_platform == 'linux'",
+    "fonttools==4.63.0 ; python_version >= '3.13' and sys_platform == 'android'",
+    "psutil==7.2.2 ; python_version >= '3.13' and (sys_platform == 'linux' or sys_platform == 'darwin' or sys_platform == 'win32')",
+    "pillow==11.0.0",
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "pytest-retry==1.7.0",
+]
+
+[tool.briefcase]
+project_name = "Toga Bitmap View Testbed"
+bundle = "org.beeware.toga"
+url = "https://beeware.org"
+license = "BSD-3-Clause"
+license-files = [
+    "../LICENSE",
+]
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+# Some CI configurations (e.g., Textual) manually override `requires` to specify
+# installation via the wheels built as part of the CI run. Adding `--find-links` allows
+# those wheels to be found. However, in most CI builds, these wheels will be .devX
+# wheels, so we need to add `--pre` to ensure they are found as solutions to pip's
+# solver.
+requirement_installer_args=[
+    "--pre",
+    "--find-links", "../dist",
+]
+
+formal_name = "Toga Bitmap View Testbed"
+description = "A testbed for Toga Bitmap View visual tests"
+icon = "icons/testbed"
+
+test_sources = [
+    "tests",
+]
+requires = [
+    "toga",
+    "..",
+]
+
+[tool.briefcase.app.testbed]
+sources = [
+    "src/testbed",
+]
+
+
+[tool.briefcase.app.testbed.macOS]
+requires = [
+    "std-nslog~=2.0.0",
+    # psutil would ideally go only in test dependencies above, so Dependabot can see it.
+    # However, for Python < 3.13, we have no way to avoid trying to install it on
+    # Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
+]
+test_sources = [
+    "../tests_backend/cocoa/tests_backend",
+]
+
+[tool.briefcase.app.testbed.linux]
+test_sources = [
+    "../tests_backend/gtk/tests_backend",
+]
+requires = [
+    # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+    # Android identifies as Linux, and psutil isn't available for Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
+]
+
+# [tool.briefcase.app.testbed.windows]
+# test_sources = [
+#     "../tests_backend/cocoa_tests_backend",
+# ]
+# requires = [
+#     "../winforms",
+#     # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+#     # Android identifies as Linux, and psutil isn't available for Android.
+#     "psutil==7.2.2 ; python_version < '3.13'",
+# ]
+
+# Mobile deployments
+# [tool.briefcase.app.testbed.iOS]
+# test_sources = [
+#     "../tests_backend/iOS_tests_backend",
+# ]
+# requires = [
+#     "std-nslog~=1.0.0",
+# ]
+
+# [tool.briefcase.app.testbed.android]
+# test_sources = [
+#     "../tests_backend/android_tests_backend",
+# ]
+
+# base_theme = "Theme.MaterialComponents.Light.DarkActionBar"
+
+# build_gradle_dependencies = [
+#     "com.google.android.material:material:1.12.0",
+#     "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0",
+#     "org.osmdroid:osmdroid-android:6.1.20",
+#     "androidx.webkit:webkit:1.15.0",
+# ]
+
+# build_gradle_extra_content = """\
+# android.defaultConfig.python {
+#     // Coverage requires access to individual .py files.
+#     extractPackages("toga_android")
+
+#     // Pytest's assertion rewriting produces its own .pyc files.
+#     pyc.src = false
+# }
+
+# chaquopy.defaultConfig.staticProxy("toga_android.widgets.internal.webview")
+# """
+
+# [tool.briefcase.app.testbed.web]
+
+[tool.briefcase.app.testbed-qt]
+formal_name = "Toga Testbed (Qt)"
+sources = [
+    "src/testbed_qt",
+    "src/testbed",
+]
+
+test_sources = [
+    "../tests_backend/qt/tests_backend",
+]
+
+requires = [
+    # psutil would ideally be top-level test dependency. However, for Python < 3.13,
+    # Android identifies as Linux, and psutil isn't available for Android.
+    "psutil==7.2.2 ; python_version < '3.13'",
+]
+
+# [tool.briefcase.app.testbed-textual]
+# formal_name = "Toga Testbed (Textual)"
+# console_app = true
+
+# sources = [
+#     "src/testbed_textual",
+#     "src/testbed",
+# ]
+
+# test_sources = [
+#     "../tests_backend/textual_tests_backend",
+# ]
